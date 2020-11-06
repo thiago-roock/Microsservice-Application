@@ -9,14 +9,14 @@ Para realizar a instalação do Scaffold em .NET, acesse seu Prompt de Comando e
 
 Clone este projeto, vá para a pasta raiz do projeto e execute o seguinte comando:
 ```
-dotnet new -i content/Microservice
+dotnet new -i content/Microsservice
 ```
 ### Usando
 Após a instalação, você pode executar `dotnet new -l` para listar todos os templates instalados em sua máquina e verificar se ele contém este Scaffold.
 
 Para criar um novo projeto com o modelo de trabalho, você pode executar o comando conforme o exemplo abaixo
 ```
-dotnet new microsservice -n Sample -p ci-sample-api -o ci-sample-api
+dotnet new microsservice-api -n Sample -p ci-sample-api -o ci-sample-api
 ```
 * Nome da solução: -n
 * Nome do repositório Gitlab: -p

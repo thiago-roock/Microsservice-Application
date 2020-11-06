@@ -1,0 +1,78 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "Thiago de Melo Lima",
+    "classifications": [
+        "Scaffold",
+        "CodInsights",
+        "Microsservice",
+        "API"
+    ],
+    "name": "Scaffold Microsservice (API)",
+    "identity": "CodInsights.Scaffold.Microsservice.API.CSharp",
+    "groupIdentity": "CodInsights.Scaffold.Microsservice.API",
+    "description": "Modelo para criação de um microsserviço ASP.NET Core application no estado da arte",
+    "shortName": "microsservice-api",
+    "tags": {
+        "language": "C#",
+        "type": "project"
+    },
+    "sourceName": "Microsservice",
+    "preferNameDirectory": true,
+    "symbols": {
+        "empty": {
+            "type": "parameter",
+            "datatype": "bool",
+            "description": "Se especificado, remova as classes do projeto na criação.",
+            "defaultValue": "false"
+        },
+        "skipRestore": {
+            "type": "parameter",
+            "datatype": "bool",
+            "description": "Se especificado, ignora a restauração automática do projeto na criação.",
+            "defaultValue": "false"
+        },
+        "projectName": {
+            "type": "parameter",
+            "description": "O mesmo que o nome do projeto GitHub, para que o projeto possa ser encontrado em Jaeger, por exemplo, ci-myproject-api",
+            "isRequired": true,
+            "replaces": "project-name"
+        }
+    },
+    "postActions": [{
+            "condition": "(!skipRestore)",
+            "description": "Restaurar pacotes NuGet exigidos por este projeto.",
+            "manualInstructions": [{
+                    "text": "Run 'dotnet restore'"
+                }
+            ],
+            "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+            "continueOnError": true
+        }
+    ],
+    "primaryOutputs": [{
+            "path": "src/Microsservice.sln"
+        }
+    ],
+    "sources": [{
+            "modifiers": [{
+                    "condition": "(empty)",
+                    "exclude": [
+                        "src/**/**/Configurations.cs",
+                        "src/**/**/Commands/*",
+                        "src/**/**/ExternalServices/*",
+                        "src/**/**/Handlers/*",
+                        "src/**/**/Models/*",
+                        "src/**/**/Validations/*",
+                        "src/Worker.Tests.Unit/**/Domain/**/*"
+                    ]
+                },
+                {
+                    "condition": "!(empty)",
+                    "exclude": [
+                        "src/**/**/Configurations.cs",
+                    ]
+                }
+            ]
+        }
+    ]
+}
