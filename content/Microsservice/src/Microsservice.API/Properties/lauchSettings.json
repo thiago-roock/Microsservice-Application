@@ -1,0 +1,11 @@
+{
+    "profiles": {
+      "Worker": {
+        "commandName": "project-name",
+        "environmentVariables": {
+          "ASPNETCORE_ENVIRONMENT": "Development",
+          "NO_PROXY": "localhost"
+        }
+      }
+    }
+  }

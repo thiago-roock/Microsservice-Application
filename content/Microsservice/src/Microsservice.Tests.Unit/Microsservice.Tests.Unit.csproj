@@ -24,7 +24,7 @@
     <Folder Include="Domain\Handlers\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Microsservice.BackgroundTasks\Microsservice.BackgroundTasks.csproj" />
+    <ProjectReference Include="..\Microsservice.API\Microsservice.API.csproj" />
     <ProjectReference Include="..\Microsservice.Domain\Microsservice.Domain.csproj" />
     <ProjectReference Include="..\Microsservice.Infrastructure\Microsservice.Infrastructure.csproj" />
   </ItemGroup>
