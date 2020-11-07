@@ -63,13 +63,14 @@
                         "src/**/**/Handlers/*",
                         "src/**/**/Models/*",
                         "src/**/**/Validations/*",
-                        "src/Worker.Tests.Unit/**/Domain/**/*"
+                        "src/Microsservice.Tests.Unit/**/Domain/**/*"
                     ]
                 },
                 {
                     "condition": "!(empty)",
                     "exclude": [
-                        "src/**/**/Configurations.cs",
+                        "src/**/**/Configurations.Empty.cs",
+                        "src/**/**/Tasks/WorkerTask.cs"
                     ]
                 }
             ]

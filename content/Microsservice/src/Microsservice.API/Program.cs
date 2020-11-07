@@ -1,26 +1,43 @@
-using Microsoft.AspNetCore.Builder;
+using System.Diagnostics.CodeAnalysis;
+using System.Net;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using System.Diagnostics.CodeAnalysis;
-namespace Microsservice.API
+using Microsservice.API;
+
+namespace Microservice.API
 {
     [ExcludeFromCodeCoverage]
     public static class Program
     {
         public static void Main()
         {
-            CreateHostBuilder(new string[] { }).Build().Run();
+            CreateWebHostBuilder(new string[] { }).Build().Run();
         }
-        public static IHostBuilder CreateHostBuilder(string[] args)
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
-            return Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
-                .ConfigureAppConfiguration((hostingContext, config) =>
-                {
-                    if (!hostingContext.HostingEnvironment.IsDevelopment())
-                        config.AddEnvironmentVariables();
-                });
+            return WebHost.CreateDefaultBuilder(args)
+                        .ConfigureAppConfiguration((hostingContext, config) =>
+                        {
+                            //if (!hostingContext.HostingEnvironment.IsDevelopment())
+                            //    config.AddConsulDefault("config/project-name/appsettings.json", 60);
+
+                            config.AddEnvironmentVariables();
+                        })
+                        .ConfigureKestrel(options =>
+                        {
+                            options.Listen(IPAddress.Any, 80, listenOptions =>
+                            {
+                                listenOptions.Protocols = HttpProtocols.Http1;
+                            });
+                            options.Listen(IPAddress.Any, 5005, listenOptions =>
+                            {
+                                listenOptions.Protocols = HttpProtocols.Http2;
+                            });
+                        })
+                        .UseStartup<Startup>();
         }
     }
 }
