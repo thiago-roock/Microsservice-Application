@@ -71,6 +71,14 @@
                     "exclude": [
                         "src/**/**/Configurations.Empty.cs",
                         "src/**/**/Tasks/WorkerTask.cs"
+                    ],
+                    "exclude": [
+                    "**/.vs/**",            
+                    "**/bin/**",            
+                    "**/obj/**",            
+                    "**/.git/**",           
+                    "**/.idea/**",          
+                    "**/.vscode/**"         
                     ]
                 }
             ]

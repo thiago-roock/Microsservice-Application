@@ -1,20 +1,21 @@
+using FluentValidation;
 using FluentValidation.AspNetCore;
+using MediatR;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsservice.Domain.Commands;
-using System;
-using System.Diagnostics.CodeAnalysis;
-using StackExchange.Redis;
-using Microsoft.AspNetCore.Builder;
-using System.Collections.Generic;
-using Microsoft.OpenApi.Models;
-using System.Reflection;
-using System.IO;
 using Microsoft.Extensions.PlatformAbstractions;
+using Microsoft.OpenApi.Models;
+using Microsservice.Domain.Commands;
 using Microsservice.Domain.Infrastructure.ExternalServices;
 using Microsservice.Infrastructure.ExternalServices;
-using MediatR;
+using StackExchange.Redis;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Reflection;
 
 namespace Microsservice.API.Configurations
 {
@@ -37,14 +38,16 @@ namespace Microsservice.API.Configurations
             var domainAssembly = typeof(MicrosserviceCommand).Assembly;
             
             mvcBuilder
-                .AddApiExplorer()
-                .AddFluentValidation(setup => 
-                setup.RegisterValidatorsFromAssembly(domainAssembly));
+                .AddApiExplorer();
  
                 
             services
+                .AddValidatorsFromAssembly(domainAssembly)
+                .AddMediatR(cfg =>
+                {
+                    cfg.RegisterServicesFromAssembly(domainAssembly);
+                })
                 .AddSwagger(configuration)
-                .AddMediatR(domainAssembly)
                 .AddLogging()
                 .AddCache(configuration)
                 .AddHealthChecks();
