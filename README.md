@@ -4,15 +4,23 @@ Modelo para criação de Microsserviços ASP.NET Core no estado da arte 🚀
 
 Para saber mais sobre templates, acesse [a documentação da microsoft](https://docs.microsoft.com/en-us/dotnet/core/tools/custom-templates).
 
-## Instalação
+## Instalação local com o projeto direto do github
+Para realizar a instalação do Scaffold em .NET, acesse seu Prompt de Comando e digite o comando abaixo:
+
+```
+dotnet new install https://github.com/Thiago-Roock/Microsservice-Application/archive/refs/heads/main.zip --install-dir content/Microsservice
+
+```
+
+### Instalação local com projeto baixo na máquina
 Para realizar a instalação do Scaffold em .NET, acesse seu Prompt de Comando e digite o comando abaixo:
 
 Clone este projeto, vá para a pasta raiz do projeto e execute o seguinte comando:
 ```
-dotnet new -i content/Microsservice
+dotnet new install ./content/Microsservice
 ```
-### Usando
-Após a instalação, você pode executar `dotnet new -l` para listar todos os templates instalados em sua máquina e verificar se ele contém este Scaffold.
+#### Usando
+Após a instalação, você pode executar `dotnet new list` para listar todos os templates instalados em sua máquina e verificar se ele contém este Scaffold.
 
 Para criar um novo projeto com o modelo de trabalho, você pode executar o comando conforme o exemplo abaixo
 ```
