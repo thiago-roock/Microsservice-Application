@@ -12,7 +12,7 @@ dotnet new install https://github.com/Thiago-Roock/Microsservice-Application/arc
 
 ```
 
-### Instalação local com projeto baixo na máquina
+### Instalação local com projeto clonado na máquina
 Para realizar a instalação do Scaffold em .NET, acesse seu Prompt de Comando e digite o comando abaixo:
 
 Clone este projeto, vá para a pasta raiz do projeto e execute o seguinte comando:
