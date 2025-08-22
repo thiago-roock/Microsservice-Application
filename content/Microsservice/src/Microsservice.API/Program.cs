@@ -26,16 +26,25 @@ namespace Microservice.API
 
                             config.AddEnvironmentVariables();
                         })
-                        .ConfigureKestrel(options =>
+                        .ConfigureKestrel((context, options) =>
                         {
-                            options.Listen(IPAddress.Any, 80, listenOptions =>
+                            if (context.HostingEnvironment.IsDevelopment())
                             {
-                                listenOptions.Protocols = HttpProtocols.Http1;
-                            });
-                            options.Listen(IPAddress.Any, 5005, listenOptions =>
+                                // ?? Em DEV não força nada ? usa launchSettings.json
+                            }
+                            else
                             {
-                                listenOptions.Protocols = HttpProtocols.Http2;
-                            });
+                                // ?? Em PRODUÇÃO ? seta HTTP/1 na porta 80 e HTTP/2 na porta 5005
+                                options.Listen(IPAddress.Any, 80, listenOptions =>
+                                {
+                                    listenOptions.Protocols = HttpProtocols.Http1;
+                                });
+                                options.Listen(IPAddress.Any, 5005, listenOptions =>
+                                {
+                                    listenOptions.Protocols = HttpProtocols.Http2;
+                                });
+                            }
+
                         })
                         .UseStartup<Startup>();
         }
