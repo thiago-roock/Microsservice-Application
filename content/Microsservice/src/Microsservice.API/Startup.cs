@@ -34,7 +34,7 @@ namespace Microsservice.API
                 endpoints.MapHealthChecks("/health");
                 endpoints.MapControllers();
             });
-            app.UseSwagger(_configuration);
+            app.UseSwagger(_configuration, _env);
         }
     }
 }

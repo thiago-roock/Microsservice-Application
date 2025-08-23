@@ -25,7 +25,6 @@
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="8.1.4" />
     <PackageReference Include="Swashbuckle.AspNetCore.ReDoc" Version="8.1.4" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="8.1.4" />
-      <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.19" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Microsservice.Domain\Microsservice.Domain.csproj" />

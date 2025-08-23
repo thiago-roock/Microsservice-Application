@@ -1,14 +1,17 @@
 using FluentValidation;
-using FluentValidation.AspNetCore;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using RabbitMQ.Client;
 using Microsservice.Domain.Commands;
 using Microsservice.Domain.Infrastructure.ExternalServices;
+using Microsservice.Infrastructure;
 using Microsservice.Infrastructure.ExternalServices;
 using StackExchange.Redis;
 using System;
@@ -51,6 +54,48 @@ namespace Microsservice.API.Configurations
                 .AddLogging()
                 .AddCache(configuration)
                 .AddHealthChecks();
+
+            services.AddScoped<DbConexao>();
+
+            // Configura fábrica do RabbitMQ (vem do appsettings.json)
+            services.AddSingleton(sp =>
+            {
+                var factory = new ConnectionFactory
+                {
+                    HostName = configuration["RabbitMq:HostName"] ?? "localhost",
+                    UserName = configuration["RabbitMq:UserName"] ?? "guest",
+                    Password = configuration["RabbitMq:Password"] ?? "guest",
+                    Port = int.Parse(configuration["RabbitMq:Port"] ?? "5672"),
+                };
+                return factory;
+            });
+
+
+            // Registra serviço
+            services.AddSingleton<IRabbitMqService, RabbitMqService>();
+
+            // OpenTelemetry + OTLP (Jaeger v2)
+            services.AddOpenTelemetry()
+                .ConfigureResource(resource => resource.AddService("Microsservice")) // Define o nome do serviço
+                .WithTracing(builder =>
+                {
+                    builder
+                        // Instrumentação automática para ASP.NET Core
+                        .AddAspNetCoreInstrumentation()
+                        // Instrumentação automática para HttpClient
+                        .AddHttpClientInstrumentation()
+                        // Exporta spans para o console (opcional, útil para debug)
+                        .AddConsoleExporter()
+                        // Spans manuais via ActivitySource("Sample")
+                        .AddSource("Microsservice")
+                       // Exporta spans para Jaeger via OTLP/gRPC
+                       .AddOtlpExporter(opt =>
+                       {
+                           var jaegerHost = configuration["Jaeger:Host"] ?? "localhost";
+                           opt.Endpoint = new Uri($"http://{jaegerHost}:4317"); // gRPC
+                       });
+
+                });
 
             return services;
         }
@@ -126,11 +171,16 @@ namespace Microsservice.API.Configurations
             services.AddSwaggerGenNewtonsoftSupport();
             return services;
         }
-        public static IApplicationBuilder UseSwagger(this IApplicationBuilder app, IConfiguration configuration)
+        public static IApplicationBuilder UseSwagger(this IApplicationBuilder app, IConfiguration configuration, IWebHostEnvironment env)
         {
             var assemblyName = Assembly.GetCallingAssembly().GetName();
             var version = string.Concat("v", assemblyName.Version);
-            var projectName = configuration["PROJECT_NAME"] ?? string.Empty;
+            var projectName = string.Empty;
+
+            //Só adiciona o projectName em Produção
+            if (env.IsProduction())
+                projectName = configuration["PROJECT_NAME"] ?? string.Empty;
+
             app.UseSwagger(setup =>
             {
                 setup.PreSerializeFilters.Add(

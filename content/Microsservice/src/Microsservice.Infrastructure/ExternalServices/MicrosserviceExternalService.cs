@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 using Microsservice.Domain.Infrastructure.ExternalServices;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace Microsservice.Infrastructure.ExternalServices
 {
@@ -26,6 +27,12 @@ namespace Microsservice.Infrastructure.ExternalServices
             {
                 Content = new StringContent(JsonConvert.SerializeObject(query), Encoding.UTF8, MediaTypeNames.Application.Json)
             };
+
+            //Propaga CodigoTracing se existir na Activity corrente
+            var codigoTracing = Activity.Current?.GetBaggageItem("CodigoTracing");
+            if (!string.IsNullOrEmpty(codigoTracing))
+                requestMessage.Headers.Add("CodigoTracing", codigoTracing);
+
             var response = await client.SendAsync(requestMessage);
             if (!response.IsSuccessStatusCode)
             {
@@ -41,12 +48,24 @@ namespace Microsservice.Infrastructure.ExternalServices
         {
             var client = clientFactory.CreateClient("project-name");
 
-            IDictionary<string, string> queryString = JsonConvert.DeserializeObject<IDictionary<string, string>>
-                                                                     (JsonConvert.SerializeObject(query));
+            // Converte objeto em query string
+            IDictionary<string, string> queryString = JsonConvert.DeserializeObject<IDictionary<string, string>>(
+                JsonConvert.SerializeObject(query)
+            );
 
             var requestUri = QueryHelpers.AddQueryString($"{client.BaseAddress}", queryString);
-            
-            var response = await client.GetAsync(requestUri);
+
+            //Cria request manualmente para adicionar headers
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri);
+
+            //Propaga CodigoTracing
+            var codigoTracing = Activity.Current?.GetBaggageItem("CodigoTracing");
+            if (!string.IsNullOrEmpty(codigoTracing))
+            {
+                requestMessage.Headers.Add("CodigoTracing", codigoTracing);
+            }
+
+            var response = await client.SendAsync(requestMessage);
 
             if (!response.IsSuccessStatusCode)
                 return null;
@@ -57,7 +76,7 @@ namespace Microsservice.Infrastructure.ExternalServices
                 return null;
 
             var result = JsonConvert.DeserializeObject<object>(message);
-            
+
             return result;
         }
         public async Task<object> Post(object query)
@@ -67,6 +86,12 @@ namespace Microsservice.Infrastructure.ExternalServices
             {
                 Content = new StringContent(JsonConvert.SerializeObject(query), Encoding.UTF8, MediaTypeNames.Application.Json)
             };
+
+            //Propaga CodigoTracing se existir na Activity corrente
+            var codigoTracing = Activity.Current?.GetBaggageItem("CodigoTracing");
+            if (!string.IsNullOrEmpty(codigoTracing))
+                requestMessage.Headers.Add("CodigoTracing", codigoTracing);
+
             var response = await client.SendAsync(requestMessage);
 
             if (!response.IsSuccessStatusCode)
@@ -86,6 +111,12 @@ namespace Microsservice.Infrastructure.ExternalServices
             {
                 Content = new StringContent(JsonConvert.SerializeObject(query), Encoding.UTF8, MediaTypeNames.Application.Json)
             };
+
+            //Propaga CodigoTracing se existir na Activity corrente
+            var codigoTracing = Activity.Current?.GetBaggageItem("CodigoTracing");
+            if (!string.IsNullOrEmpty(codigoTracing))
+                requestMessage.Headers.Add("CodigoTracing", codigoTracing);
+
             var response = await client.SendAsync(requestMessage);
             if (!response.IsSuccessStatusCode)
             {
