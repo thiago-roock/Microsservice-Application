@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
-using Sample.Domain.Infrastructure.ExternalServices;
-using Sample.Infrastructure.Repository;
+using Microsservice.Domain.Infrastructure.ExternalServices;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,12 +15,14 @@ namespace Microsservice.Infrastructure.ExternalServices
     {
         private readonly IConnection _connection;
         private readonly IChannel _channel;
-        private readonly ILogger<DistributedCacheRepository> _logger;
+        private readonly ILogger<RabbitMqService> _logger;
+        private readonly IConfiguration _configuration;
         private static readonly ActivitySource ActivitySource = new("Microsservice.RabbitMq");
 
 
-        public RabbitMqService(ConnectionFactory factory, ILogger<DistributedCacheRepository> logger)
+        public RabbitMqService(ConnectionFactory factory, ILogger<RabbitMqService> logger, IConfiguration configuration)
         {
+            _configuration = configuration;
             _logger = logger;
             _logger.LogInformation("Carregando configurações do RabbitMQ...");
             // Cria conexão e canal (aqui ainda síncrono no construtor, mas vindo da DI)
@@ -30,7 +32,7 @@ namespace Microsservice.Infrastructure.ExternalServices
             _logger.LogInformation("Canal com RabbitMQ criado com sucesso.");
             // Declara fila
             _channel.QueueDeclareAsync(
-                queue: "nomedafila",
+                queue: _configuration["RBMQ_NOME_FILA"],
                 durable: false,
                 exclusive: false,
                 autoDelete: false,
@@ -49,6 +51,7 @@ namespace Microsservice.Infrastructure.ExternalServices
             {
                 var body = Encoding.UTF8.GetBytes(mensagem);
                 var props = new BasicProperties();
+                props.ContentType = "application/json";
                 props.Headers = new Dictionary<string, object>();
 
                 // 🔹 Propagar o trace context (traceparent, tracestate)
@@ -71,7 +74,7 @@ namespace Microsservice.Infrastructure.ExternalServices
                 // Publica mensagem de forma assíncrona
                 await _channel.BasicPublishAsync(
                     exchange: "",
-                    routingKey: "nomedafila",
+                    routingKey: _configuration["RBMQ_NOME_FILA"],
                     mandatory: false,
                     basicProperties: props,
                     body: body,

@@ -11,8 +11,10 @@ using OpenTelemetry.Trace;
 using RabbitMQ.Client;
 using Microsservice.Domain.Commands;
 using Microsservice.Domain.Infrastructure.ExternalServices;
+using Microsservice.Domain.Infrastructure.Repository;
 using Microsservice.Infrastructure;
 using Microsservice.Infrastructure.ExternalServices;
+using Microsservice.Infrastructure.Repository;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
@@ -56,6 +58,9 @@ namespace Microsservice.API.Configurations
                 .AddHealthChecks();
 
             services.AddScoped<DbConexao>();
+
+            // Registra escopos de repositórios
+            services.AddScoped<ILogsRepository, LogsRepository>();
 
             // Configura fábrica do RabbitMQ (vem do appsettings.json)
             services.AddSingleton(sp =>
